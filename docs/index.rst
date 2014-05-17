@@ -89,7 +89,7 @@ Google API
 `GOOGLE_LOGIN_CLIENT_SECRET` Client Secret
 `GOOGLE_LOGIN_SCOPES` Default scopes
 `GOOGLE_LOGIN_REDIRECT_URI`  Default redirect URI
-`GOOGLE_LOGIN_AUTH_SERVER_OPTS`  Default redirect URI
+`GOOGLE_LOGIN_AUTH_SERVER_OPTS`  Parameters to pass to Google Auth Server
 ============================ ===================================================
 
 API
