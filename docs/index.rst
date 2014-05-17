@@ -58,10 +58,24 @@ extra params to `login_url` and they'll be passed to your
 
     googlelogin.login_url(params=dict(section='notifications', next=url_for('.profile')))
 
-You can also configure Google auth url params::
+You can also configure Google auth url params by setting them in the optional
+configuration value `GOOGLE_LOGIN_AUTH_SERVER_OPTS`::
 
-    googlelogin.login_url(approval_prompt='force', access_type='offline')
-    googlelogin.login_url(redirect_uri=url_for('admin'))
+    GOOGLE_LOGIN_AUTH_SERVER_OPTS = {
+        'approval_prompt': 'force',
+        'access_type': 'offline',
+    }
+
+Available Google auth server params:
+
+`response_type`: code, token
+`prompt`: none, select_account, consent
+`approval_prompt`: force, auto
+`access_type`: online, offline
+`scopes`: string (separated with commas) or list
+`redirect_uri`: string
+`login_hint`: string
+
 
 Configuration
 =============
@@ -75,6 +89,7 @@ Google API
 `GOOGLE_LOGIN_CLIENT_SECRET` Client Secret
 `GOOGLE_LOGIN_SCOPES` Default scopes
 `GOOGLE_LOGIN_REDIRECT_URI`  Default redirect URI
+`GOOGLE_LOGIN_AUTH_SERVER_OPTS`  Default redirect URI
 ============================ ===================================================
 
 API
