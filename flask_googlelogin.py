@@ -68,6 +68,20 @@ class GoogleLogin(object):
         return self.app.config.get('GOOGLE_LOGIN_SCOPES', '')
 
     @property
+    def login_auth_server_opts(self):
+        """ 
+        Available Google auth server params:
+        response_type: code, token
+        prompt: none, select_account, consent
+        approval_prompt: force, auto
+        access_type: online, offline
+        scopes: string (separated with commas) or list
+        redirect_uri: string
+        login_hint: string
+        """
+        return self.app.config.get('GOOGLE_LOGIN_AUTH_SERVER_OPTS', {})
+
+    @property
     def client_id(self):
         return self.app.config['GOOGLE_LOGIN_CLIENT_ID']
 
@@ -90,38 +104,32 @@ class GoogleLogin(object):
     def parse_state(self, state):
         return dict(parse_qsl(b64decode(str(state))))
 
-    def login_url(self, params=None, **kwargs):
+    def login_url(self, params=None):
         """
         Return login url with params encoded in state
-
-        Available Google auth server params:
-        response_type: code, token
-        prompt: none, select_account, consent
-        approval_prompt: force, auto
-        access_type: online, offline
-        scopes: string (separated with commas) or list
-        redirect_uri: string
-        login_hint: string
         """
-        kwargs.setdefault('response_type', 'code')
-        kwargs.setdefault('access_type', 'online')
+        
+        opts = self.login_auth_server_opts
 
-        if 'prompt' not in kwargs:
-            kwargs.setdefault('approval_prompt', 'auto')
+        opts.setdefault('response_type', 'code')
+        opts.setdefault('access_type', 'online')
 
-        scopes = kwargs.pop('scopes', self.scopes.split(','))
+        if 'prompt' not in opts:
+            opts.setdefault('approval_prompt', 'auto')
+
+        scopes = opts.pop('scopes', self.scopes.split(','))
         if USERINFO_PROFILE_SCOPE not in scopes:
             scopes.append(USERINFO_PROFILE_SCOPE)
 
-        redirect_uri = kwargs.pop('redirect_uri', self.redirect_uri)
+        redirect_uri = opts.pop('redirect_uri', self.redirect_uri)
         state = self.sign_params(params or {})
-
+        
         return GOOGLE_OAUTH2_AUTH_URL + '?' + urlencode(
             dict(client_id=self.client_id,
                  scope=' '.join(scopes),
                  redirect_uri=redirect_uri,
                  state=state,
-                 **kwargs))
+                 **opts))
 
     def unauthorized_callback(self):
         """
